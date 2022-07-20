@@ -1,0 +1,57 @@
+# Importing libraries
+library(tidyverse)
+library(hrbrthemes)
+library(kableExtra)
+library(viridis)
+library(DT)
+library(magick)
+library(ggpubr)
+options(scipen = 2)
+
+
+
+# Importing data
+techno <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-07-19/technology.csv')
+
+
+
+
+
+# Wrangelign & Filtering
+communi <- subset(techno, iso3c == 'USA' | iso3c == 'RUS' | iso3c == c('JPN') |
+                    iso3c == 'CHN'| iso3c == "DEU" | iso3c == "CAN" | iso3c == "FRA" | iso3c == "GBR")
+
+communi <- communi %>% filter(str_detect(category, 'Communications')) %>% group_by(label,year,iso3c) %>% 
+  summarize(sum1 = mean(value))
+
+
+communi <- subset(communi, label == 'Cellular subscriptions'|
+                    label == 'People with internet access'|
+                    label == 'Fixed telephone subscriptions')
+
+communi <- subset(communi, year > 1990)
+
+
+communi_sum <- communi %>% group_by(label,year) %>% summarize(sum2 = sum(sum1))
+
+
+
+
+
+# Plotting
+p1 <- ggplot(data = communi_sum, aes(x = year, y = sum2, group = label, color = label)) +
+  geom_line(size = 1.2) + 
+  geom_point(size = 2) + 
+  scale_color_manual(values = c("#83B7C1","#fba612","#0D950C"), name = "") +
+  scale_size_manual(values=c(0.2,1.5)) +
+  ggtitle("Total World Wide Consumption of Telecommunications") +
+  theme_classic() +
+  theme(plot.title = element_text(size=14)) + ylab("World Wide Consumption In Numbers") + xlab("Year") + 
+  geom_vline(xintercept = 2019, linetype="dashed", color = "#95290C", size=1) 
+
+text <- paste("The above graph depicts the total consumption of each telecommunication technology service. The dotted red-line depicts the beginning of the COVID-19 crisis. And as one can see, it had a significant impact on consumption." ,ep = " ")
+
+text.p <- ggparagraph(text, face = "italic", size = 16, color = "black")
+
+ggarrange(p1,text.p, nrow=2, ncol = 1,heights = c(2, 0.7),
+          common.legend = TRUE, legend = "top")
