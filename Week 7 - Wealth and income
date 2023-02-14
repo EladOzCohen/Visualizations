@@ -10,74 +10,88 @@ library(viridis)
 library(hrbrthemes)
 library(ggthemes)
 library(ggpubr)
+library(tidytuesdayR)
 
 
-#Importing the data from my PC
-setwd("E:/Elads_tidy/")
-lifetime_earn <- read_csv("lifetime_earn.csv")
-student_debt <- read_csv("student_debt.csv")
-home_owner <- read_csv("home_owner.csv")
-retirement <- read_csv("retirement.csv")
-race_wealth <- read_csv("race_wealth.csv")
-income_time <- read_csv("income_time.csv")
-income_limits <- read_csv("income_limits.csv")
-income_aggregate <- read_csv("income_aggregate.csv")
-income_distribution <- read_csv("income_distribution.csv")
-income_mean <- read_csv("income_mean.csv")
+
+
+# Importing Data
+
+lifetime_earn <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-09/lifetime_earn.csv')
+student_debt <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-09/student_debt.csv')
+retirement <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-09/retirement.csv')
+home_owner <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-09/home_owner.csv')
+race_wealth <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-09/race_wealth.csv')
+income_time <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-09/income_time.csv')
+income_limits <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-09/income_limits.csv')
+income_aggregate <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-09/income_aggregate.csv')
+income_distribution <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-09/income_distribution.csv')
+income_mean <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-09/income_mean.csv')
+
+
+
 
 #### Plotting
 
 #Student plots
-student_debt$race <- factor(student_debt$race,levels = c('White','Black','Hispanic'))
+student_debt$race <-  ifelse(student_debt$race == 'White','Caucasian',ifelse(student_debt$race == 'Black','African American',student_debt$race))
+student_debt$race <- factor(student_debt$race,levels = c('Caucasian','African American','Hispanic'))
+
+
+
+
 
 p1 <- ggplot(student_debt,aes(x=year,y=loan_debt,fill=race,color=race)) + 
-      geom_area(aes(fill =fct_reorder(race,loan_debt,.desc=TRUE)),position="identity",alpha = 0.65,colour = 'white') +
-      theme_economist() + scale_fill_manual(values=c("#440154FF","#39568CFF","#FDE725FF"))  + ggtitle("Mean Size of Student Loan Debt") + 
-      theme(axis.title.y = element_text( size=10)) + ylab("") + guides(fill=guide_legend(title="Ethnic Group:  "))
+  geom_area(aes(fill =fct_reorder(race,loan_debt,.desc=TRUE)),position="identity",alpha = 0.65,colour = 'white') +
+  theme_economist() + scale_fill_manual(values=c("#440154FF","#39568CFF","#FDE725FF"))  + ggtitle("Mean Size of Student Loan Debt") + 
+  theme(axis.title.y = element_text( size=10)) + ylab("") + guides(fill=guide_legend(title="Ethnic Group:  "))
 
 p1
+
 #Home ownership graphs
-home_owner$race <- factor(home_owner$race, levels = c('White','Black','Hispanic'))
-home_owner$home_owner_pct <- ifelse(home_owner$race == 'Black',home_owner$home_owner_pct - 0.1,home_owner$home_owner_pct) 
-  
+home_owner$race <-  ifelse(home_owner$race == 'White','Caucasian',ifelse(home_owner$race == 'Black','African American',home_owner$race))
+home_owner$home_owner_pct <- ifelse(home_owner$race == 'African American',home_owner$home_owner_pct - 0.1,home_owner$home_owner_pct) 
+
 
 
 p2 <- ggplot(home_owner,aes(x=year,y=home_owner_pct,fill=race)) +
-      geom_area(aes(fill =fct_reorder(race,home_owner_pct,.desc=TRUE)),position="identity",alpha=0.65, colour = "white")+ylim(0,0.8)+
-      theme_economist() + scale_fill_manual(values=c("#440154FF","#39568CFF","#FDE725FF")) + ggtitle("Proportion of Families Owning A House") +
-      theme(axis.title.y = element_text( size=10)) + ylab("") + guides(fill=guide_legend(title="Ethnic Group:  "))
-
+  geom_area(aes(fill =fct_reorder(race,home_owner_pct,.desc=TRUE)),position="identity",alpha=0.65, colour = "white")+ylim(0,0.8)+
+  theme_economist() + scale_fill_manual(values=c("#440154FF","#39568CFF","#FDE725FF")) + ggtitle("Proportion of Families Owning A House") +
+  theme(axis.title.y = element_text( size=10)) + ylab("") + guides(fill=guide_legend(title="Ethnic Group:  "))
 
 p2
-#Retirement graphs
-p3 <-  ggplot(retirement,aes(x=year,y=retirement,fill=race,color=race)) +
-       geom_area(aes(colour ="white",fill =fct_reorder(race,retirement,.desc=TRUE)),position="identity",alpha=0.65, colour = "white") +
-       theme_economist() + scale_fill_manual(values=c("#440154FF","#39568CFF","#FDE725FF")) + ggtitle("Mean Liquefied Retirement Savings") +
-       theme(axis.title.y = element_text( size=10)) + ylab("") + guides(fill=guide_legend(title="Ethnic Group:  "))
 
+
+
+#Retirement graphs
+retirement$race <-  ifelse(student_debt$race == 'White','Caucasian',ifelse(student_debt$race == 'Black','African American',student_debt$race))
+retirement$race <- factor(student_debt$race,levels = c('Caucasian','African American','Hispanic'))
+
+
+
+p3 <-  ggplot(retirement,aes(x=year,y=retirement,fill=race,color=race)) +
+  geom_area(aes(colour ="white",fill =fct_reorder(race,retirement,.desc=TRUE)),position="identity",alpha=0.65, colour = "white") +
+  theme_economist() + scale_fill_manual(values=c("#440154FF","#39568CFF","#FDE725FF")) + ggtitle("Mean Liquefied Retirement Savings") +
+  theme(axis.title.y = element_text( size=10)) + ylab("") + guides(fill=guide_legend(title="Ethnic Group:  "))
 p3
+
+
+
+
+
 #Race wealth graphs
 race_wealth_1980 <- subset(race_wealth,year !=1963 & race != 'Non-White') #Choosing the data from year 1980 and beyond.
 race_wealth_1980$year <- factor(race_wealth_1980$year) #Factoring the years for be displayed in the x-axis of my bar-plot.
-                                                      #(otherwise, R will think they are continues and won't display all of them)
+#(otherwise, R will think they are continues and won't display all of them)
 
 p4 <- ggplot(race_wealth_1980,aes(year,wealth_family,fill = fct_reorder(race,wealth_family,.desc=TRUE))) + 
-      geom_bar(alpha = 1,position='dodge',stat= "identity") +
-      theme_economist() + scale_fill_manual(values=c("#440154FF","#39568CFF","#FDE725FF")) + ggtitle("Mean Family Wealth") +
-      theme(axis.title.y = element_text( size=10)) + ylab("") + guides(fill=guide_legend(title="Ethnic Group:  "))
+  geom_bar(alpha = 1,position='dodge',stat= "identity") +
+  theme_economist() + scale_fill_manual(values=c("#440154FF","#39568CFF","#FDE725FF")) + ggtitle("Mean Family Wealth") +
+  theme(axis.title.y = element_text( size=10)) + ylab("") + guides(fill=guide_legend(title="Ethnic Group:  "))
 
 p4
-# Preparing to merge all the graphs into one sheet:
-text <- paste("The above graphs depicts various wealth and income data in the U.S.",
-              "More specifically, for each ethnic group they depict the change in time of:",
-              "Student loan debt size (A), The proportion of families owning a house (B),",
-              "The average size of liquefied savings (C) & the average family wealth (D)",
-              "All in all, one can see a consistent financial gaps between the three ethnic groups.", sep = " ")
 
 
-text.p <- ggparagraph(text, face = "italic", size = 12, color = "black")
 
-ggarrange(p1,p2,p3,p4,text.p,labels = c("A", "B", "C","D"),ncol = 2,widths=c(1,1),heights=c(1,1,0.4)
-          ,nrow = 3,common.legend = TRUE, legend = "top") + theme_economist()  + scale_fill_economist() +
-          scale_color_economist() 
-
+plot(ggarrange(p1,p2,p3,p4,labels = c("A", "B", "C","D"),ncol = 2,widths=c(1,1),heights=c(1,1,0.4)
+               ,nrow = 2,common.legend = TRUE, legend = "top") + theme_economist()  + scale_fill_economist() +  scale_color_economist()) 
