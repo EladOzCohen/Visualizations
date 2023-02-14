@@ -1,4 +1,6 @@
 ### Made by: @EladOzC
+
+# Importing libraries.
 library(tidyverse)
 library(ggridges)
 library(ggplot2)
@@ -7,47 +9,66 @@ library(RColorBrewer)
 library(ggthemes)
 library(ggpubr)
 
+
+
+
 #Extracting & renaming the relevant variables  
-survey <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-05-18/survey.csv')
-data <- survey
+data <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-05-18/survey.csv')
 data <- subset(data,currency == 'USD')
 data <- subset(data,gender == "Man" | gender == "Woman")
 data <- subset(data,annual_salary < 3e+06)
 data <- subset(data, race == "White" | race == "Asian or Asian American"| race == "Black or African American" )
+
+
+data$race <-  ifelse(data$race == 'White','Caucasian',
+                     ifelse(data$race == 'Black or African American','African American',data$race))
+
+
+data$race <- factor(data$race,levels = c('Caucasian','African American','Asian or Asian American'))
+
+
 data <- subset(data,data$how_old_are_you != "under 18")
 colnames(data)[16] <- "education"
 colnames(data)[2] <- "age"
 colnames(data)[15] <- "experience"
 colnames(data)[18] <- "Ethnicity"
 
-#Calculating the annumal median salary by the various variables.
+
+
+
+#Calculating annual median salary by the various variables.
 data_sum <- data %>% group_by(age,gender,experience,Ethnicity) %>% 
   summarise(median_sal = median(annual_salary),count = n())
 
+
+
+
+
+
 #The plotting itself
- p1 <- ggplot(data_sum, aes(x = median_sal, y = age,fill = Ethnicity)) +
-  geom_density_ridges(aes(point_fill = Ethnicity,point_colour = Ethnicity),
-  jittered_points = TRUE, scale = .95, rel_min_height = .01,
-  point_shape = "|", point_size = 5, size = 1,
-  position = position_points_jitter(height = 0)) +
+ggplot(data_sum, aes(x = median_sal, y = age,fill = Ethnicity)) +
+      geom_density_ridges(aes(point_fill = Ethnicity,point_colour = Ethnicity),
+                      jittered_points = TRUE, scale = .95, rel_min_height = .01,
+                      point_shape = "|", point_size = 5, size = 1,
+                      position = position_points_jitter(height = 0)) +
+  
+  
+  # The following block coordinates the color of choice between Legend and distributions.
   scale_fill_manual(values = c("#228b2250", "#0072B250", "#483d8b50")) +
   scale_color_manual(values = c("#228b2250", "#0072B250", "#483d8b50")) +
   scale_discrete_manual("point_color", values = c("#228b2250", "#0072B250", "#483d8b50")) +
-  xlim(c(0,300000)) +
+  
+  
+  
+  # The following block deals smoothing the Legend color, axes fonts and background colors.
   guides(fill = guide_legend(override.aes = list(fill = c("#228b2250", "#0072B250", "#483d8b50"), color = NA, point_color = NA))) +
-  theme_economist() + 
-  scale_color_economist() + 
-  theme(legend.position="right") + xlab("Median Salary In USD") + ylab("Age Of Worker") +
-  scale_x_continuous(labels = scales::comma) + theme(axis.text=element_text(size=10), axis.title=element_text(size=10,face="italic")) +
+  theme_bw() + 
+  theme(legend.position="right", 
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14)) + 
+  xlab("Median Salary In USD") + ylab("Age Of Employee") +
+  scale_x_continuous(labels = scales::comma) + 
   ggtitle("Median Annual Salary")
 
-#Preparing the text
- text <- paste("The above plot depicts the various annual median salary distributions", 
-              "as a function of ethnicity & age interval, according to the 'Ask A Manager Survey' data.",
-              "One may see how the ethnic economic inequality tends to increase over the years.",
-                sep = " ")
-text.p <- ggparagraph(text, face = "italic", size = 14, color = "black")
-
-#Binding it all 
- ggarrange(p1,text.p,nrow=2,widths =c(1,1), heights = c(4,1),
-   common.legend = TRUE, legend = "right") + theme_economist()  + scale_fill_economist() +scale_color_economist()
