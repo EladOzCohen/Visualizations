@@ -53,5 +53,5 @@ ggplot(data = communi_sum, aes(x = year, y = sum2, group = label, color = label)
         axis.title.x = element_text(size = 14),
         axis.title.y = element_text(size = 14)) +
   ylab("World Wide Consumption In Numbers") + xlab("Year") + 
-  scale_y_continuous(labels = scales::comma)
+  scale_y_continuous(labels = scales::comma) +
   geom_vline(xintercept = 2019, linetype="dashed", color = "#95290C", size=1) 
