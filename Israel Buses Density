@@ -75,7 +75,7 @@ ggplot(full_grid_stops)+
   geom_sf(aes(fill = stops), size = 0.7)+
   scale_fill_viridis(option = "turbo",name = "Bus stops", trans = "log", breaks = c(1,10,100,500))+
   labs(title = "Bus stops per 7km\u00B2",
-       caption = "Data: geodata.lib.utexas.ed (07/03/2023) | Visualization By: eladozc")+
+       caption = "Data: geodata.lib.utexas.ed (07/03/2023) | Visualization By: EladOzCohen")+
   coord_sf(xlim = c(33.5,36))+
   
   theme(
