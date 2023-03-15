@@ -1,4 +1,9 @@
+<img style="display: block;-webkit-user-select: none;margin: auto;cursor: zoom-in;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;" src="https://raw.githubusercontent.com/EladOzCohen/Visualizations/main/israel_buses.png" width="860" height="753">
 
+
+
+
+```{r}
 library(dplyr)
 library(sf)
 library(ggplot2)
@@ -101,3 +106,4 @@ ggplot(full_grid_stops)+
 
 
 ggsave("bus_stops.png", width= 8, height= 7)
+```
