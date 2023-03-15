@@ -1,5 +1,5 @@
 
-[!buses](israel_buses.png)
+![buses](israel_buses.png)
 
 ```R
 library(dplyr)
